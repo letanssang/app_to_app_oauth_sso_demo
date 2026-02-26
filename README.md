@@ -4,8 +4,8 @@ Một hệ thống nguyên mẫu (Proof of Concept) trình diễn **Kiến trúc
 
 Dự án mô phỏng kịch bản:
 
-- Ứng dụng trung tâm **TCCT** (Auth Provider) đóng vai trò là xương sống định danh.
-- Ứng dụng vệ tinh **STĐV** (Sổ tay Đảng viên) (Client App) mượn phiên đăng nhập của TCCT một cách mượt mà, không yêu cầu người dùng phải gõ lại Mật khẩu, cũng không bị đẩy ra Trình duyệt Web (Zero-Browser).
+- Ứng dụng trung tâm **Auth Provider App** đóng vai trò là xương sống định danh.
+- Ứng dụng vệ tinh **Client App** mượn phiên đăng nhập của Auth Provider App một cách mượt mà, không yêu cầu người dùng phải gõ lại Mật khẩu, cũng không bị đẩy ra Trình duyệt Web (Zero-Browser).
 
 ---
 
@@ -13,14 +13,14 @@ Dự án mô phỏng kịch bản:
 
 Hệ thống hoạt động dựa trên 4 trụ cột tương tác khép kín:
 
-1. **📱 App TCCT (Auth Provider - Nhặt Link & Cấp Quyền)**
+1. **📱 Auth Provider App (Nhặt Link & Cấp Quyền)**
    - Ngồi ngay cửa ngõ thiết bị HĐH (Android/iOS).
    - Nếu User chưa login, bắt Login. Nếu Login rồi, hiển thị mượt mà **Consent Dialog (Popup xin quyền)**.
    - Giao tiếp bảo mật với Backend để báo cáo uỷ quyền.
 
-2. **📱 App STĐV (Client App - Người xin quyền)**
+2. **📱 Client App (Người xin quyền)**
    - Tự sinh hệ thống khóa **PKCE (Challenge & Verifier)** và mã ngẫu nhiên **State** (Chống CSRF) lưu vào ổ cứng siêu bảo mật `Secure Storage`.
-   - Dùng OS Deep Link gọi cửa App TCCT.
+   - Dùng OS Deep Link gọi cửa Auth Provider App.
    - Khi nhận được tín hiệu trả về, đổi Code lấy Access Token.
 
 3. **⚙️ Backend Proxy (BFF - Kẻ Thế Thân Giữ Chìa Khóa)**
@@ -36,8 +36,8 @@ Hệ thống hoạt động dựa trên 4 trụ cột tương tác khép kín:
 ## 🚀 Tính Năng Bảo Mật Vượt Trội (Zero-Trust)
 
 - **OS-Level Verified App Links:** Chống triệt để chiêu trò Hacker cài Malware làm nhái link để "Cướp sóng" (Link Hijacking).
-- **Phép Màu vòng lặp PKCE:** Client đẻ mã Challenge đi gửi cho TCCT, giấu mã Verifier ở nhà. Chỉ khi trùng mã Verifier mới đổi được Token. Auth Code nhỡ có bị cướp giữa đường cũng là rác.
-- **BFF Pattern & RAM Cache:** Tuyệt đối không để `Client Secret` và `Access Token` thật bay phấp phới qua không khí ở bước nhảy từ TCCT về STĐV.
+- **Phép Màu vòng lặp PKCE:** Client App đẻ mã Challenge đi gửi cho Auth Provider App, giấu mã Verifier ở nhà. Chỉ khi trùng mã Verifier mới đổi được Token. Auth Code nhỡ có bị cướp giữa đường cũng là rác.
+- **BFF Pattern & RAM Cache:** Tuyệt đối không để `Client Secret` và `Access Token` thật bay phấp phới qua không khí ở bước nhảy từ Auth Provider App về Client App.
 
 ---
 
@@ -63,7 +63,7 @@ python3 backend_server.py
 
 _(Đây là cục BFF kết nối ngầm với Keycloak ở bước 1)._
 
-### Bước 3: Build & Chạy App TCCT (Auth Provider)
+### Bước 3: Build & Chạy Auth Provider App
 
 Mở một Terminal mới (Hoặc mở bằng Android Studio), kết nối Máy ảo / Điện thoại thật:
 
@@ -74,7 +74,7 @@ flutter run
 
 _Lưu ý: Bạn phải cài đặt App này vào máy ảo trước để hệ điều hành nhận diện được Deep Link._
 
-### Bước 4: Build & Chạy App STĐV (Client App)
+### Bước 4: Build & Chạy Client App
 
 Mở một Terminal cuối cùng:
 
@@ -87,14 +87,13 @@ flutter run
 
 ## 🧪 Kịch Bản Test Khuyên Dùng
 
-Đảm bảo hai App **TCCT** và **STĐV** đều đã nằm sẵn trên máy bạn.
+Đảm bảo hai App **Auth Provider** và **Client** đều đã nằm sẵn trên máy bạn.
 
-1. Mở App **TCCT**, đăng nhập bằng tài khoản giả lập: Nhập bừa User/Pass -> Bấm Login. App sẽ báo bừng sáng báo thành công và có chữ **Logged in as...**. Thoát ra màn hình trang chủ.
-2. Mở App **STĐV**, bấm nút **"Login with TCCT App"**.
-3. **Sự kỳ diệu:** Hệ điều hành chớp nhoáng kéo App TCCT lên mặt tiền. App TCCT **KHÔNG** bắt log in lại, mà nổi lên popup: _"Ứng dụng SĐTV muốn xin quyền... Đồng Ý / Từ Chối"_.
-4. Bấm **"Đồng ý"**, HĐH giật chớp nhoáng kéo bản thân bạn trở về App STĐV.
-5. Xem log terminal: Mã Token thực sự đã chảy vào tay STĐV. Đăng nhập mượt mà!
+1. Mở **Auth Provider App**, đăng nhập bằng tài khoản giả lập: Nhập bừa User/Pass -> Bấm Login. App sẽ báo bừng sáng báo thành công và có chữ **Logged in as...**. Thoát ra màn hình trang chủ.
+2. Mở **Client App**, bấm nút **"Login with Auth Provider App"**.
+3. **Sự kỳ diệu:** Hệ điều hành chớp nhoáng kéo Auth Provider App lên mặt tiền. Auth Provider App **KHÔNG** bắt log in lại, mà nổi lên popup: _"Ứng dụng Client muốn xin quyền... Đồng Ý / Từ Chối"_.
+4. Bấm **"Đồng ý"**, HĐH giật chớp nhoáng kéo bản thân bạn trở về Client App.
+5. Xem log terminal: Mã Token thực sự đã chảy vào tay Client App. Đăng nhập mượt mà!
 
 ---
 
-_Tác giả: Architecture / Technical Team_
