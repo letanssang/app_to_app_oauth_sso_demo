@@ -10,6 +10,7 @@ Dự án mô phỏng kịch bản:
 ---
 
 ## 🌟 Kiến Trúc Hệ Thống (4-Component Architecture)
+<img width="1280" height="714" alt="image" src="https://github.com/user-attachments/assets/780996bd-c787-4a8e-879d-0ece2344c7e1" />
 
 Hệ thống hoạt động dựa trên 4 trụ cột tương tác khép kín:
 
