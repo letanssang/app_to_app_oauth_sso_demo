@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.auth_provider_app",
+      "sha256_cert_fingerprints": [
+        "80:6C:09:09:6A:0F:F7:F0:A4:F8:82:59:27:E8:2C:2A:CD:2F:2F:F8:1E:A7:FB:17:1F:4C:56:52:99:65:BE:A5"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.client_app",
+      "sha256_cert_fingerprints": [
+        "80:6C:09:09:6A:0F:F7:F0:A4:F8:82:59:27:E8:2C:2A:CD:2F:2F:F8:1E:A7:FB:17:1F:4C:56:52:99:65:BE:A5"
+      ]
+    }
+  }
+]

@@ -1,0 +1,64 @@
+Đây là kịch bản (Prompt) chuyên dụng dùng để đưa cho các công cụ thiết kế AI trình diễn (như Gamma.app, Tome.app, hay Chatbot tạo sơ đồ Mermaid) để vẽ ra các Infographic / Sơ đồ kỹ thuật (Technical Diagrams) trình bày cho Tech Lead / CTO.
+
+Bối cảnh hệ thống: Kiến trúc Lai (Hybrid Architecture). App trung tâm TCCT không phải 100% SSO, mà nó chia làm 2 loại module:
+- (1) Core Modules: Do đội ngũ nội bộ Core phát triển (Native, chung kiến trúc app gốc), nhúng trực tiếp.
+- (2) Satellite/External Modules (như STĐV) do team bên ngoài/đối tác phát triển, kiến trúc riêng biệt -> Dùng mô hình Native App-to-App SSO để tích hợp vào hệ sinh thái TCCT.
+
+Hãy sử dụng các prompt dưới đây để yêu cầu AI tạo ra 4 Infographic quan trọng nhất của bài báo cáo.
+
+=========================================
+[PROMPT SỐ 1] INFOGRAPHIC: BỨC TRANH KIẾN TRÚC TỔNG THỂ (HYBRID SUPER APP ARCHITECTURE)
+=========================================
+"Hãy đóng vai chuyên gia UI/UX và System Architect đỉnh cao. Tạo cho tôi mô tả chi tiết để vẽ một Infographic dạng 'Sơ đồ khối' (Block Diagram) thể hiện Kiến trúc Tích hợp Lai (Hybrid Integration Architecture) của Super App TCCT:
+- Trái tim hệ thống (Cột giữa): Ứng dụng trung tâm 'TCCT Super App'. Bao gồm 2 thành phần lõi: 'Host Framework' và 'Core Built-in Modules' (những tính năng do nội bộ team tự code, ăn chặt vào app gốc nhằm tối đa hoá hiệu năng ở trang chủ). Đồng thời đóng vai trò 'Identity Provider (IdP)'.
+- Vành đai bên ngoài (Satellite Ecosystem): Các ứng dụng độc lập như 'Sổ tay Đảng viên (STĐV)' ở bên trái, và 'Partner App' ở bên phải. 
+- Mũi tên kết nối: Từ TCCT chĩa mũi tên kép sang các External/Satellite Apps, ghi nhãn mũi tên là 'OS-level Deep Link (OIDC & PKCE)'. Nền tảng bên dưới tất cả là 'BFF (Backend For Frontend) & Keycloak Auth Server'.
+- Yêu cầu thiết kế: Dùng tông màu Xanh Đậm cho phần Lõi TCCT, tông màu Cam/Trắng cho các vệ tinh. Tạo biểu tượng cái Khiên (Shield) ở mũi tên kết nối thể hiện tính bảo mật."
+
+=========================================
+[PROMPT SỐ 2] INFOGRAPHIC: MA TRẬN QUYẾT ĐỊNH (DECISION MATRIX) CHỌN KIẾN TRÚC
+=========================================
+"Hãy thiết kế một Infographic dạng So Sánh (Comparison Table / Flowchart) giúp Tech Lead trả lời câu hỏi: Khi có 1 tính năng mới, chọn phương án 'Nhúng trực tiếp' hay 'Tách app Native SSO'?
+- Vẽ theo cấu trúc Lưu đồ (Decision Tree): Câu hỏi đầu tiên 'Module do ai phát triển & Có kiến trúc sẵn chưa?'. 
+   + Nhánh 1: Team Nội Bộ TCCT (Core) -> Trọng số dữ liệu, giao diện gắn chặt hệ thống? -> Chọn 'Built-in Module' (Ưu điểm: Zero-latency, Chung State).
+   + Nhánh 2: Outsource/Đối tác/Domain quá rộng (Ví dụ: STĐV) -> Giới hạn dung lượng App? Có nguy cơ Dependency Hell? -> Chọn 'Native App-to-App SSO' (Ưu điểm: File APK nhẹ, Cô lập lỗi (Fault Isolation), Release độc lập).
+- Thông điệp chốt: Không có 'đạn bạc' (Silver Bullet) cho siêu ứng dụng. Sự linh hoạt (Hybrid) mới là chìa khóa. App lõi gọn nhẹ, cắt lớp rủi ro đẩy ra viền (viền ở đây là SSO)."
+
+=========================================
+[PROMPT SỐ 3] INFOGRAPHIC: SƠ ĐỒ LUỒNG TRỰC QUAN GÓC NHÌN TAM GIÁC (3 TRỤ CỘT & 1 VỆ TINH)
+=========================================
+"Hãy đóng vai vị trí System Architect. Tôi cần vẽ một Sơ đồ Kiến trúc Trực quan (System Architecture Flowchart) thể hiện luồng Đăng nhập App-to-App. KHÔNG vẽ sơ đồ tuần tự (Sequence Diagram) từ trên xuống, mà hãy vẽ dưới dạng Sơ đồ Không gian (Spatial Diagram) với bố cục Tam giác Vàng (Golden Triangle) cho 3 thành phần chính và 1 thành phần phụ.
+
+Bố cục Khối Đối Tượng (Nodes):
+1. Đỉnh phía trên (Top): 'App TCCT - Auth Provider'
+2. Đỉnh dưới bên trái (Bottom Left): 'App STĐV - Client'
+3. Đỉnh dưới bên phải (Bottom Right): 'Backend Proxy'
+4. Khối vệ tinh (Phụ): 'Keycloak IDP' nằm bên cạnh 'Backend Proxy', nối bằng một nét gạch ngang (thể hiện giao tiếp cục bộ Server-to-Server).
+
+Các mũi tên luồng (Đánh số từ 1 đến 7 chạy trên các mũi tên). Yêu cầu TỐI GIẢN CHỮ TRÊN MŨI TÊN (Chỉ viết 3-5 chữ ngắn gọn), phần giải thích chi tiết đặt ở hộp Chú giải (Legend) bên dưới:
+- Mũi tên [1] (Nét đứt, Cạnh trái, Hướng lên): Từ 'App STĐV' lên 'App TCCT'. Chữ trên hình: "(1) Gửi 'PKCE Challenge' + 'State'".
+- Mũi tên [2] (Vòng tròn tại chỗ ở App TCCT): Chữ trên hình: "(2) Phê duyệt SSO".
+- Mũi tên [3] (Nét liền, Cạnh phải, Hướng xuống): Từ 'App TCCT' xuống 'Backend Proxy'. Chữ trên hình: "(3) API: Xác thực Ngầm".
+- Mũi tên [4] (Nút liền, 2 chiều, Theo chiều ngang bên cạnh Backend): Giữa 'Backend Proxy' và 'Keycloak'. Chữ trên hình: "(4) Lấy Access Token".
+- Mũi tên [5] (Nét đứt/Xanh, Cạnh phải, Hướng ngược lên TRỞ VỀ): Vẽ ngay cạnh mũi tên 3, chạy từ 'Backend Proxy' ngược lên 'App TCCT'. Chữ trên hình: "(5) API Trả Auth Code".
+- Mũi tên [6] (Nét đứt/Cam, Cạnh trái, Hướng lao xuống): Vẽ ngay cạnh mũi tên 1, chạy từ 'App TCCT' phóng thẳng xuống 'App STĐV'. Chữ trên hình: "(6) Deep Link Trả Auth Code".
+- Mũi tên [7] (Nét liền, Cạnh đáy, Hướng sang phải): Từ 'App STĐV' băng thẳng sang 'Backend Proxy'. Chữ trên hình: "(7) Soi 'State' & Đổi Token".
+
+Hộp Chú giải (Legend) đi kèm bên dưới hoặc bên cạnh hình:
+(1) Khi bấm Đăng nhập, App STĐV tự sinh khoá PKCE và chuỗi ngẫu nhiên 'State' (Chống Lừa đảo CSRF). Nó giấu kín ('Verifier' + 'State') vào Secure Storage và gọi DeepLink sang App TCCT.
+(2) App TCCT (đã đăng nhập sẵn) hiển thị Dialog xin cấp quyền truy cập, nếu chưa đăng nhập, show form đăng nhập.
+(3) App TCCT gọi ngầm API /login truyền Tài khoản nội bộ kèm 'Code Challenge'.
+(4) Backend lấy Token từ Keycloak và giấu vào RAM Cache. 
+(5) Backend proxy tự thiết kế mã Authorization Code ngắn hạn rồi trả thẳng lại cho App TCCT (API Response).
+(6) App TCCT dùng OS Deep Link lấy Auth Code (kẹp cùng cái 'State' cũ) bắn ngược lại mở App STĐV.
+(7) App STĐV kiểm tra 'State' trả về khớp với mã trong Secure Storage (Chặn đứng tấn công giả mạo). Khớp xong, nó kẹp tiếp 'Auth Code' + Nửa chìa 'Verifier' gọi API /token. Backend xác minh khớp -> Trả Access Token thật.
+
+Yêu cầu màu sắc: Màu sắc các mũi tên nên phân biệt rõ loại giao tiếp (Ví dụ: Đỏ/Cam đứt nét cho Native OS Deep Link; Xanh Dương liền nét cho Server API). Nên vẽ nổi bật Dialog xin cấp phép ở bước số 2 và ký hiệu "Ổ Khoá Secure Storage" ở bước 1 và 7. Sơ đồ cần toát lên sự an toàn bảo mật tuyệt đối!"
+
+=========================================
+[PROMPT SỐ 4] INFOGRAPHIC: CƠ CHẾ BẢO MẬT 3 TẦNG KÉP (ZERO-TRUST SECURITY)
+=========================================
+"Tạo kịch bản thiết kế Infographic mô tả 3 "Ổ khoá" bảo mật làm nên kiến trúc này, hãy hình tượng hóa theo dạng 3 Lớp Khiên chắn (3 Shields).
+- Khiên 1: OS-Level Verified Links (assetlinks.json). Hình ảnh chìa khoá từ hệ điều hành. Chỉ trỏ đích danh App chính chủ, chặn đứng hacker tạo App giả mạo hứng Link để ăn cắp luồng đăng nhập (Chống Phishing / Link Hijacking).
+- Khiên 2: The PKCE Magic (Code Challenge & Verifier). Hình minh hoạ: Hai nửa của chiếc nhẫn. Mã Code Challenge gửi trước, Mã Code Verifier gửi sau để đổi Token. Dù kẻ xấu nghe lén được Request Auth Code (Interceptor), chúng không có bí mật lõi (Verifier) để đổi ra Token thành công.
+- Khiên 3: Backend Proxy (BFF Pattern). Hình minh hoạ 1 bức tường lửa gạch đỏ che giấu Backend lõi (Keycloak). Client App (STĐV) không giao tiếp trực tiếp với Keycloak. BFF giữ chặt 'Client Secret' (Mật khẩu ứng dụng) ở tầng Server (Thay vì cấu hình thô bạo vào trong App Mobile dễ bị unpack, reverse engineering)."

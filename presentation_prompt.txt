@@ -1,0 +1,50 @@
+Bạn là một Kiến trúc sư Hệ thống (Software Architect) cấp cao, đóng vai trò khách quan và trung lập để tư vấn chiến lược xây dựng hệ sinh thái Super App cho Ban Giám đốc (CTO/Technical Lead).
+Dựa vào bối cảnh nghiệp vụ dưới đây, hãy viết một bản thuyết trình (Slide Deck) khoảng 7-8 trang. Nhiệm vụ của bạn là phân tích vĩ mô, trình bày các sự đánh đổi (trade-offs) giữa 3 mô hình kiến trúc, bảo vệ lộ trình triển khai phù hợp với nguồn lực hiện tại, đồng thời mở đường cho tương lai khi tổ chức mở rộng quy mô.
+
+Hãy viết theo format chuyên nghiệp, tinh gọn, thuần túy tập trung vào Architecture & Solution. Cấu trúc mỗi slide gồm:
+- Tiêu đề Slide (Headline)
+- Nội dung (Bullet points ngắn gọn, súc tích)
+- Speaker Notes (Giải thích lý do đằng sau các trade-offs, rủi ro, và giải pháp)
+
+=== BỐI CẢNH DỰ ÁN ===
+Tổ chức đang xây dựng một Super App đóng vai trò trung tâm có tên "TCCT". Bài toán đặt ra là làm sao để tích hợp hàng loạt các hệ thống nghiệp vụ (ví dụ: module "Sổ tay Đảng viên - SĐTV") một cách tối ưu nhất, đảm bảo tính khả thi hiện tại và khả năng mở rộng (Scale) lên hàng chục, hàng trăm module trong tương lai (khi nguồn lực dồi dào hơn). Có 3 hướng đi kiến trúc đang được cân nhắc.
+
+=== PHÂN TÍCH 3 MÔ HÌNH KIẾN TRÚC TÍCH HỢP (TRADE-OFFS) ===
+
+**1. Kiến trúc Tích hợp Nguyên khối (Monolithic Package Embedding)**
+- **Đặc điểm:** Đóng gói mã nguồn của mọi module (SĐTV, VNP, v.v.) vào chung một repository và compile ra một tệp ứng dụng (APK/IPA) duy nhất cho ứng dụng TCCT.
+- **Điểm mạnh:** Trải nghiệm chuyển trang hoàn hảo 100% không độ trễ. Quản lý trạng thái (State) và chia sẻ bộ nhớ (Memory Allocation) cực kỳ trực tiếp và dễ dàng.
+- **Đánh đổi (Trade-offs / Rủi ro):** 
+   - Kích thước ứng dụng phình to tuyến tính theo số lượng module. 
+   - Nghẽn cổ chai (Bottleneck) CI/CD: Thời gian build/release tốn hàng giờ.
+   - Dependency Hell: Quản lý phiên bản thư viện dùng chung cực kỳ phức tạp.
+   - Zero Fault Isolation: Một lỗi tràn bộ nhớ (Memory Leak) ở module nhỏ có thể gây crash toàn bộ hệ thống TCCT.
+
+**2. Kiến trúc Ứng dụng Hạt nhân (Mini-App / Micro-Frontends Platform)**
+- **Đặc điểm:** TCCT là một Host App (Vỏ rỗng). SĐTV và các module khác được phát triển bằng công kỹ thuật Web (React/Vue/HTML5) và tải động (Dynamic Loading) qua WebView/Engine vào Host App khi cần thiết (Tương tự WeChat, Zalo, MoMo).
+- **Điểm mạnh:** Kích thước Host App siêu nhẹ. Scale ranh giới N+ module vô hạn. Cập nhật tính năng (Over-The-Air) tức thì không cần qua duyệt App Store. Code base phân tách tuyệt đối.
+- **Đánh đổi (Trade-offs / Rủi ro):** 
+   - Chi phí đầu tư (CAPEX) cực kỳ khổng lồ. Bắt buộc phải có một Đội ngũ Nền tảng (Platform Team) hùng hậu chỉ để xây dựng Bridge (giao tiếp JS-Native) và UI Framework nội bộ. 
+   - Trải nghiệm hiệu năng render, animation sẽ bị suy giảm so với Native thuần. Đây là chiến lược dài hạn (Long-term), không đáp ứng được bài toán Go-to-market ngắn hạn với nguồn lực hữu hạn.
+
+**3. Kiến trúc Phân tán với Hệ định danh Trung tâm (Native App-to-App SSO)**
+- **Đặc điểm:** TCCT và SĐTV phát triển, build, và phân phối trên Store dưới dạng các Native App độc lập. TCCT đóng vai trò là "Identity Provider". SĐTV giao tiếp với TCCT qua OS-level Deep Link để mượn phiên đăng nhập (OAuth 2.0 / PKCE).
+- **Điểm mạnh:** Decoupled (Tách biệt hoàn toàn phần mềm). Team SĐTV tự chủ quy trình build & release. Giữ được hiệu năng 100% Native. App nào cần thì User tự tải, không gánh dung lượng thừa. Triển khai siêu tốc độ (Time-to-market cực nhạy) nhờ tận dụng codebase hiện có.
+- **Đánh đổi (Trade-offs / Rủi ro):** 
+   - Phân mảnh thị giác (App Sprawl): Người dùng buộc phải duy trì nhiều icon ứng dụng độc lập trên màn hình điện thoại (thay vì tất cả trong một). 
+   - Bị khựng nhẹ (Context Switch) khi Hệ điều hành nhảy thiết bị (từ App A sang App B). Trải nghiệm chưa đạt đến ngưỡng "Seamless/Vô hình" như Mini-App hay Nhúng code.
+
+=== LỘ TRÌNH KIẾN TRÚC ĐỀ XUẤT (ARCHITECTURE EVOLUTION ROADMAP) ===
+- Mặc dù đây là một sự đánh đổi, nhưng phải nhìn nhận theo lăng kính lộ trình (Roadmap).
+- **Giai đoạn 1 (Short to Mid-term):** Lựa chọn "Native App-to-App SSO" làm giải pháp chuyển tiếp (Transitional State). Nó là điểm cân bằng lý tưởng nhất giúp xé lẻ rủi ro dồn cục, tận dụng code hiện tại, tốn rất ít nguồn lực mà vẫn kết dính được trải nghiệm user qua một luồng đăng nhập duy nhất. Xây dựng vững hạ tầng OAuth/OIDC/BFF/PKCE.
+- **Giai đoạn 2 (Long-term Blueprint):** Khi nguồn lực kỹ thuật (Tài chính & Nhân sự) chín muồi, team có thể đập đi xây lại nền móng của SĐTV thành dạng Web/Mini-game, tiến hóa dần sang kiến trúc "Mini-App Platform". Biến App TCCT thực sự thành Super App chuẩn mực toàn cầu.
+
+=== GỢI Ý ĐỀ CƯƠNG SLIDE YÊC CẦU ===
+Slide 1: Tiêu đề - Chiến lược Tính hợp Kỹ thuật Hệ sinh thái Super App TCCT (Góc nhìn Kiến trúc sư).
+Slide 2: Bài toán gốc rễ - Áp lực Tích hợp (Scale) đối diện với Giới hạn Công nghệ.
+Slide 3: Tầm nhìn Kiến trúc - Chuyển dịch TCCT thành Nền tảng Định danh Tập trung (Identity Provider).
+Slide 4: Đánh giá Giải pháp 1 - Kiến trúc Nguyên khối (Monolithic App-in-App) & Rào cản Dung lượng.
+Slide 5: Đánh giá Giải pháp 2 - Kiến trúc Mini-App Platform (Đích đến Tương lai VS Đánh đổi Hiện tại).
+Slide 6: Đánh giá Giải pháp 3 - Đa Ứng dụng Phân tán Native SSO (Điểm Giao Cắt Khả Thi).
+Slide 7: Phân tích Sự đánh đổi (Trade-off Matrix) - Tổng quan Ưu / Nhược / Tính Khả thi.
+Slide 8: Lộ trình Tiến hóa Hệ thống (Evolution Roadmap) - Từ Transitional SSO tiến tới Tương lai Mini-App.
